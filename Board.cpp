@@ -11,8 +11,7 @@
 #include <fstream>
 
 using namespace std;
-//TODO: add the blank spaces with hashes
-//TODO: check words that cros sharing specific letters 
+//TODO: check words that cros sharing specific letters (last to thing to and i ll need to just the loading thing) NOOICE
 
 
 
@@ -32,12 +31,12 @@ string upper(string input) {							//func to change all lower chars to upper if 
 }
 string LCD(string lcd) {						//func to maintain lcd case sensitive 
 	if (97 <= lcd.at(0) && lcd.at(0) <= 122)
-		lcd.at(0) = lcd.at(0) - 32; 
+		lcd.at(0) = lcd.at(0) - 32;
 	if (65 <= lcd.at(1) && lcd.at(1) <= 90)
 		lcd.at(1) = lcd.at(1) + 32;
 	if (lcd.at(2) == 104 || lcd.at(2) == 118)
 		lcd.at(2) = lcd.at(2) - 32;
-	return lcd; 
+	return lcd;
 }
 //==========================================================================================
 //COLOR CODES: (alternative: use symbolic const’s)
@@ -146,8 +145,9 @@ Board::~Board()     //destructor bc yes...
 //========================== Board Manipulation ============================================
 //==========================================================================================
 void Board::Update(string pos, string word) { //i need to add a vector to save the words inputed for future reference -remove!
+	
 	word = upper(word); //transfrom everything into uppercases 
-	pos = LCD(pos); 
+	pos = LCD(pos);
 	bool flag = true;
 	for (int i = 0; i < words.size(); i++) {			//check if the word has been previously entered 
 		if (word == words.at(i))
@@ -157,6 +157,8 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 		char A = 64, a = 96;
 		int x = pos[0] - 65, y = pos[1] - 97;
 		int size = word.size();
+		int xsizemajor = x + size; int xsizeless = x - 1; //used for the blank spaces
+		int ysizemajor = y + size; int ysizeless = y - 1;
 		int Space = 0;
 		if (pos[2] == 'H')  //distribute through line/columns 
 			Space = this->y - y;
@@ -167,15 +169,33 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 		else {
 			words.push_back(word);
 			coordenates.push_back(pos);
-			if (pos[2] == 'V') //distribute through inside the vector line/columns 
+			if (pos[2] == 'V') {//distribute through inside the vector line/columns 
 				for (int i = 0; i < size; i++) {
 					table[x][y] = word[i];
 					x++;
-				}																						//need to implement some kind of func capable 
+				}
+				if (xsizemajor < this->x) {
+					if (table[xsizemajor][y] == '.')
+						table[xsizemajor][y] = '#';
+				}
+				if (xsizeless >= 0) {
+					if (table[xsizeless][y] == '.')
+						table[xsizeless][y] = '#';
+				}
+			}		
+																	//need to implement some kind of func capable 
 			else if (pos[2] == 'H') {																	//of checking same letters and words, and a removal 
 				for (int i = 0; i < size; i++) {
 					table[x][y] = word[i];
 					y++;
+				}
+				if (ysizemajor < this->y) {
+					if (table[x][ysizemajor] == '.')
+						table[x][ysizemajor] = '#';
+				}
+				if (ysizeless >= 0) {
+					if (table[x][ysizeless] == '.')
+						table[x][ysizeless] = '#';
 				}
 			}
 		}
@@ -191,8 +211,14 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 			A++;
 			cout << A << ' ';
 			for (int j = 0; j < this->y; j++) {
-				setcolor(0, 7);
-				cout << ' ' << table[i][j] << ' ';
+				if (table[i][j] == '#'){
+					setcolor(15, 0);
+					cout << ' ' << table[i][j] << ' ';
+				}
+				else {
+					setcolor(0, 7);
+					cout << ' ' << table[i][j] << ' ';
+				}
 			}
 			setcolor(15);
 			cout << endl;
@@ -255,10 +281,10 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 void Board::Save() {   //save fucntion in txt file done! 
 	string name;
 	ofstream save_file;
-	
+
 	name = "b000.txt";
- 
-	for (int i = 0; i < 999; i++){
+
+	for (int i = 0; i < 999; i++) {
 		string number;
 		if (i < 10)
 			number = "00" + to_string(i);
@@ -267,17 +293,18 @@ void Board::Save() {   //save fucntion in txt file done!
 		else if (i >= 100 || i <= 999)
 			number = to_string(i);
 		name = 'b' + number + ".txt";
-		
+
 		ifstream check_file(name);
 		if (check_file.is_open()) {
-		}else break; 
-	} 
-	
+		}
+		else break;
+	}
+
 	//FILE NAME LETS CHANGE THIS WITH A FUNCTION ABLE TO SEE THE NUMBERS
 	save_file.open(name);
 	save_file << "Dictionary file ? " << name << endl << endl; // dictionary file name not file name , eventually change 
-	
-	//grab functions on top and just repeat them here basicaly
+
+															   //grab functions on top and just repeat them here basicaly
 	char A = 64, a = 96;
 	save_file << "   ";														//Same func used on build func, but this time using "this" to get privates 
 	for (int i = 0; i < this->y; i++) {									// to not to confuse with x y declared on this func
