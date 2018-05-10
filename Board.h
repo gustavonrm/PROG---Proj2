@@ -1,0 +1,25 @@
+#ifndef BOARD_H
+#define BOARD_H
+
+#include <iostream>
+#include<string>
+
+using namespace std; 
+
+class Board
+{
+public:
+	Board();
+	Board(unsigned int x, unsigned int y);
+	void Build(const int x, const int y);
+	void Update(string pos,string word);
+	void Erase(string word); 
+	void Save();
+	void Load(); 
+
+	~Board();
+private:
+	unsigned int x, y; 
+};
+
+#endif // 
