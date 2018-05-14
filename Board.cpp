@@ -170,32 +170,34 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 		else {
 			words.push_back(word);
 			coordenates.push_back(pos);
-			if (pos[2] == 'V') {//distribute through inside the vector line/columns 
-				for (int i = 0; i < size; i++) {
-					table[x][y] = word[i];
-					x++;
+			if (pos[2] == 'V') {
+				/*if(){		*/					//distribute through inside the vector line/columns    //need something to check if it valid to write the word
+					for (int i = 0; i < size; i++) {		//write the word							//word can only be written if the board had '.' or shared letters
+						table[x][y] = word[i];															//if has hashes cant write!
+						x++;
+					}
+					if (xsizemajor < this->x) {					//hashes 
+						if (table[xsizemajor][y] == '.')
+							table[xsizemajor][y] = '#';
+					}
+					if (xsizeless >= 0) {						//hashes
+						if (table[xsizeless][y] == '.')
+							table[xsizeless][y] = '#';
+					}
 				}
-				if (xsizemajor < this->x) {
-					if (table[xsizemajor][y] == '.')
-						table[xsizemajor][y] = '#';
-				}
-				if (xsizeless >= 0) {
-					if (table[xsizeless][y] == '.')
-						table[xsizeless][y] = '#';
-				}
-			}		
-																	//need to implement some kind of func capable 
-			else if (pos[2] == 'H') {																	//of checking same letters and words, and a removal 
+			/*else cout << endl << "The word can´t be written!" << endl << endl; 
+			}	*/																	//need to implement some kind of func capable 
+			else if (pos[2] == 'H') {				//write the word				//of checking same letters and words, and a removal 
 				for (int i = 0; i < size; i++) {
 					table[x][y] = word[i];
 					y++;
 				}
 				if (ysizemajor < this->y) {
-					if (table[x][ysizemajor] == '.')
+					if (table[x][ysizemajor] == '.')			//hashes
 						table[x][ysizemajor] = '#';
 				}
 				if (ysizeless >= 0) {
-					if (table[x][ysizeless] == '.')
+					if (table[x][ysizeless] == '.')				//hashes
 						table[x][ysizeless] = '#';
 				}
 			}
@@ -274,7 +276,7 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 	}
 	if (flag == false)
 		cout << "That word is not on the board!" << endl;
-}
+}	 //had something to not to erase common letters on crossed words 
 //==========================================================================================
 //============= File Manipulation ==========================================================     status: 1st func done!, 2nd to be done
 //==========================================================================================

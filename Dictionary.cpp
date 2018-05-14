@@ -21,17 +21,19 @@ void Dictionary::simple_words(vector<string> vec)
 	for (int i = 0; i<vec.size(); i++)
 		for (int j = 0; j < vec.at(i).length(); j++)
 		{
-			if (vec.at(i).at(j) < 'A' || vec.at(i).at(j) > 'Z')
-			{
-				j == string::npos;
-				vec.erase(vec.begin() + i);
-			}
-			else
+			if(vec.at(i).at(j)>='a'&& vec.at(i).at(j)<='z')
 			{
 				char c;
 				c = vec.at(i).at(j);
-				toupper(c);
+				c = c - 32;
+				vec.at(i).at(j) = c;
 			}
+			else if (vec.at(i).at(j) < 'A' || vec.at(i).at(j) > 'Z')
+			{
+				j = string::npos;
+				vec.erase(vec.begin() + i);
+				i--;
+			}			
 		}
 }
 
@@ -50,6 +52,7 @@ Dictionary::Dictionary(string synonyms)
 	{
 		while (getline(intext, line))
 		{
+			temp_vec.clear();
 			temp_vec.push_back(line.substr(0, line.find(":")));
 			line.erase(0, line.find(":") + 2);
 			to_vec(line);

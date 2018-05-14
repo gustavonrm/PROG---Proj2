@@ -20,6 +20,8 @@ public:
 	~Board();
 private:
 	unsigned int x, y; 
+	friend string upper(string input);
+	friend bool sharedLetters(string input,string direction); 
 };
 
 #endif // 
