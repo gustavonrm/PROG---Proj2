@@ -12,6 +12,7 @@
 
 using namespace std;
 //TODO: check words that cros sharing specific letters (last to thing to and i ll need to just the loading thing) NOOICE
+//TODO: try to change when the porgram finished and if you have time, the 2 vectors for words and positions that print from the board file for a map (key=pos, val=word)
 
 
 
