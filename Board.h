@@ -21,7 +21,8 @@ public:
 private:
 	unsigned int x, y; 
 	friend string upper(string input);
-	friend bool sharedLetters(string input,string direction); 
+	friend bool sharedLetters(string input,string coord); 
+	friend string LCD(string lcd);
 };
 
 #endif // 

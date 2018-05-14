@@ -1,5 +1,5 @@
 ﻿#include "Board.h"
-//remember to insert the blanck cells and the shared letter and if the words has been inputted previously 😍	
+//remember to insert the blanck cells and the shared letter and if the words has been inputted previously 😍
 // PROG - MIEIC
 // JAS
 // Example of a program that prints colored characters on the console (in text mode)
@@ -14,7 +14,8 @@ using namespace std;
 //TODO: check words that cros sharing specific letters (last to thing to and i ll need to just the loading thing) NOOICE
 //TODO: try to change when the porgram finished and if you have time, the 2 vectors for words and positions that print from the board file for a map (key=pos, val=word)
 
-
+vector <vector <char> > table;						//board vector, used as a sample O......O
+vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
 
 string upper(string input) {							//func to change all lower chars to upper if existent on the input 
 	for (int i = 0; i < input.size(); i++) {
@@ -30,7 +31,40 @@ string upper(string input) {							//func to change all lower chars to upper if 
 	}
 	return input;
 }
-string LCD(string lcd) {						//func to maintain lcd case sensitive 
+
+bool sharedLetters(string input, string coord) {
+	
+	int y = coord.at(0)-65, x= coord.at(1)-97;
+	if (coord.at(2)=='V'){
+		for (int i = 0; i < input.size(); i++) {
+			if (table[y][x] == '.')
+			y++;
+			else if (table[y][x] == input[i])
+				y++;
+			else if (table[y][x] != input[i])
+				return false;
+			else if (table[y][x] == '#')
+				return false;
+		}
+		return true;
+	}
+	else if (coord.at(2)=='H'){
+		for (int i = 0; i < input.size(); i++) {
+			if (table[y][x] == '.')
+				x++;
+			else if (table[y][x] == input[i])
+				x++;
+			else if (table[y][x] != input[i])
+				return false;
+			else if (table[y][x] == '#')
+				return false;
+		}
+		return true;
+	}
+}
+
+
+string LCD(string lcd) {						//func to maintain lcd case sense
 	if (97 <= lcd.at(0) && lcd.at(0) <= 122)
 		lcd.at(0) = lcd.at(0) - 32;
 	if (65 <= lcd.at(1) && lcd.at(1) <= 90)
@@ -105,8 +139,6 @@ void setcolor(unsigned int color, unsigned int background_color)
 //========================================================================================== 
 //====================== Class Itself ======================================================
 //==========================================================================================
-vector <vector <char> > table;						//board vector, used as a sample O......O
-vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
 
 Board::Board() {
 
@@ -146,9 +178,9 @@ Board::~Board()     //destructor bc yes...
 //========================== Board Manipulation ============================================
 //==========================================================================================
 void Board::Update(string pos, string word) { //i need to add a vector to save the words inputed for future reference -remove!
-	
 	word = upper(word); //transfrom everything into uppercases 
 	pos = LCD(pos);
+	
 	bool flag = true;
 	for (int i = 0; i < words.size(); i++) {			//check if the word has been previously entered 
 		if (word == words.at(i))
@@ -166,12 +198,14 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 		else if (pos[2] == 'V')
 			Space = this->x - x;
 		if (Space < size)     //((H > this->x && V == 0) || (V > this->y && H == 0)) { //check if valid, tho this condition is fucking wrong pls change
-			cout << "Word doesn't fit!" << endl;									// generate problems on random lines...
+			cout << "Word doesn't fit!" << endl;
+		else if (sharedLetters(word,pos)==false)
+			cout << "That word cannot be written!" << endl << endl; // generate problems on random lines...
 		else {
 			words.push_back(word);
 			coordenates.push_back(pos);
 			if (pos[2] == 'V') {
-				/*if(){		*/					//distribute through inside the vector line/columns    //need something to check if it valid to write the word
+				//distribute through inside the vector line/columns    //need something to check if it valid to write the word
 					for (int i = 0; i < size; i++) {		//write the word							//word can only be written if the board had '.' or shared letters
 						table[x][y] = word[i];															//if has hashes cant write!
 						x++;
@@ -184,9 +218,7 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 						if (table[xsizeless][y] == '.')
 							table[xsizeless][y] = '#';
 					}
-				}
-			/*else cout << endl << "The word can´t be written!" << endl << endl; 
-			}	*/																	//need to implement some kind of func capable 
+				}															//need to implement some kind of func capable 
 			else if (pos[2] == 'H') {				//write the word				//of checking same letters and words, and a removal 
 				for (int i = 0; i < size; i++) {
 					table[x][y] = word[i];
