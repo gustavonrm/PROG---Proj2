@@ -14,8 +14,8 @@ public:
 	void Build(const int x, const int y);
 	void Update(string pos,string word);
 	void Erase(string word); 
-	void Save();
-	void Load(); 
+	void Save(string dictionary); 
+	void Load();
 
 	~Board();
 private:

@@ -1,0 +1,12 @@
+Dictionary file ? synonyms.txt
+
+B A C K # 
+. . H . . 
+. # I L L 
+. . L . . 
+. . L . . 
+
+AaH BACK
+AcV CHILL
+CcH ILL
+ 	
