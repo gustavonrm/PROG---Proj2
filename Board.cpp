@@ -17,6 +17,7 @@ using namespace std;
 //TODO: Option 2 porgram load func that can read the text file and allocate it in a vector so that the board can be continued 
 //TODO: build a func to print the board, avoiding copy and pasting always the same process
 //TODO: on load add a counter to define private coordinates 
+//TODO: remove space that is being alocated ont the vector and written on the file 
 
 vector <vector <char> > table;						//board vector, used as a sample O......O
 vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
@@ -359,12 +360,35 @@ void Board::Save(string dictionary) {   //save fucntion in txt file done!
 	save_file.close();
 
 }
-void Board::Load() {
+void Board::Save(string dictionary, string file) {
+	ofstream save_file;
+	save_file.open(file);
+	save_file << "Dictionary file ? " << dictionary << endl << endl; // dictionary file name not file name , eventually change 
+	for (int i = 0; i < this->x; i++) {
+
+		for (int j = 0; j < this->y; j++) {
+			save_file << table[i][j] << ' ';
+		}
+		save_file << endl;
+	}
+	save_file << endl;
+	for (int i = 0; i < words.size(); i++) {									//func that shows the vectors 
+
+		save_file << coordenates.at(i) << " " << words.at(i) << endl;
+	}
+	setcolor(10);
+	cout << " file saved succefully! " << endl << endl;
+	setcolor(15);
+	save_file.close();
+
+}
+string Board::Load() {
 	table.clear(); //clear table vector just for security 
 	words.clear();
 	coordenates.clear();																			 //the file always the follow this patter:
-	string name, line;																				// 1st line dictionary file name, 2nd blanck, the dic starts on the 3rd line 
-	ifstream load_file;																				//ending with a blanck line, the line by line showing pos and words from the board 
+	string name, line,dictionary;																				// 1st line dictionary file name, 2nd blanck, the dic starts on the 3rd line 
+	ifstream load_file;																		//ending with a blanck line, the line by line showing pos and words from the board 
+	string value;
 	vector <char> letters;			//vector to allocate temporarily the board letters line by line 
 	int x = 0, y = 0;
 	cout << "Please enter name of the board your want to load: ";									//so...
@@ -373,6 +397,10 @@ void Board::Load() {
 	if (load_file.is_open()) {
 		while (getline(load_file, line)) {												//push_back using using vectors, vector by vector pushback 
 			if (!line.empty()) {
+				if (line.at(0)=='D' && line.at(1)=='i') {
+					dictionary = line.erase(0, 18);
+					line = "...";
+				}
 				if (line.at(1) == ' ') {																//1. i ll use a func to check the third line so i can get the X dim
 					letters.clear();
 					for (int i = 0; i < line.size(); i++) {
@@ -382,12 +410,14 @@ void Board::Load() {
 					table.push_back(letters);
 					y++;
 				}
-				if ((line.at(1) >= 97 || line.at(1) <= 122) && line.at(1)!=' ' && (line.at(1) >= 65 || line.at(1) <= 90 )) {
+				if ((line.at(1) >= 97 || line.at(1) <= 122) && line.at(1)!=' ' &&(line.at(2) >= 65 || line.at(2) <= 90 )) {
+					if(line!="..."){
 					string pos;
 					pos = line.substr(0, 3);
 					coordenates.push_back(pos);
 					line.erase(0, 4);
 					words.push_back(line);
+					}
 				}
 			}
 		}	
@@ -419,6 +449,8 @@ void Board::Load() {
 			cout << endl;
 			load_file.close();
 		}
+		value = name + ' ' + dictionary;
+		return  value;
 	}
 	else cout << "That file does not exist or cannot be opened! " << endl << endl;
 }
