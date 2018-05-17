@@ -13,6 +13,10 @@
 using namespace std;
 //TODO: check words that cros sharing specific letters (last to thing to and i ll need to just the loading thing) NOOICE
 //TODO: try to change when the porgram finished and if you have time, the 2 vectors for words and positions that print from the board file for a map (key=pos, val=word)
+//TODO: improve remove func sa that can be sensitive to hashes and maintain shared chars
+//TODO: Option 2 porgram load func that can read the text file and allocate it in a vector so that the board can be continued 
+//TODO: build a func to print the board, avoiding copy and pasting always the same process
+//TODO: on load add a counter to define private coordinates 
 
 vector <vector <char> > table;						//board vector, used as a sample O......O
 vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
@@ -33,12 +37,12 @@ string upper(string input) {							//func to change all lower chars to upper if 
 }
 
 bool sharedLetters(string input, string coord) {
-	
-	int y = coord.at(0)-65, x= coord.at(1)-97;
-	if (coord.at(2)=='V'){
+
+	int y = coord.at(0) - 65, x = coord.at(1) - 97;
+	if (coord.at(2) == 'V') {
 		for (int i = 0; i < input.size(); i++) {
 			if (table[y][x] == '.')
-			y++;
+				y++;
 			else if (table[y][x] == input[i])
 				y++;
 			else if (table[y][x] != input[i])
@@ -48,7 +52,7 @@ bool sharedLetters(string input, string coord) {
 		}
 		return true;
 	}
-	else if (coord.at(2)=='H'){
+	else if (coord.at(2) == 'H') {
 		for (int i = 0; i < input.size(); i++) {
 			if (table[y][x] == '.')
 				x++;
@@ -180,7 +184,7 @@ Board::~Board()     //destructor bc yes...
 void Board::Update(string pos, string word) { //i need to add a vector to save the words inputed for future reference -remove!
 	word = upper(word); //transfrom everything into uppercases 
 	pos = LCD(pos);
-	
+
 	bool flag = true;
 	for (int i = 0; i < words.size(); i++) {			//check if the word has been previously entered 
 		if (word == words.at(i))
@@ -199,26 +203,26 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 			Space = this->x - x;
 		if (Space < size)     //((H > this->x && V == 0) || (V > this->y && H == 0)) { //check if valid, tho this condition is fucking wrong pls change
 			cout << "Word doesn't fit!" << endl;
-		else if (sharedLetters(word,pos)==false)
+		else if (sharedLetters(word, pos) == false)
 			cout << "That word cannot be written!" << endl << endl; // generate problems on random lines...
 		else {
 			words.push_back(word);
 			coordenates.push_back(pos);
 			if (pos[2] == 'V') {
 				//distribute through inside the vector line/columns    //need something to check if it valid to write the word
-					for (int i = 0; i < size; i++) {		//write the word							//word can only be written if the board had '.' or shared letters
-						table[x][y] = word[i];															//if has hashes cant write!
-						x++;
-					}
-					if (xsizemajor < this->x) {					//hashes 
-						if (table[xsizemajor][y] == '.')
-							table[xsizemajor][y] = '#';
-					}
-					if (xsizeless >= 0) {						//hashes
-						if (table[xsizeless][y] == '.')
-							table[xsizeless][y] = '#';
-					}
-				}															//need to implement some kind of func capable 
+				for (int i = 0; i < size; i++) {		//write the word							//word can only be written if the board had '.' or shared letters
+					table[x][y] = word[i];															//if has hashes cant write!
+					x++;
+				}
+				if (xsizemajor < this->x) {					//hashes 
+					if (table[xsizemajor][y] == '.')
+						table[xsizemajor][y] = '#';
+				}
+				if (xsizeless >= 0) {						//hashes
+					if (table[xsizeless][y] == '.')
+						table[xsizeless][y] = '#';
+				}
+			}															//need to implement some kind of func capable 
 			else if (pos[2] == 'H') {				//write the word				//of checking same letters and words, and a removal 
 				for (int i = 0; i < size; i++) {
 					table[x][y] = word[i];
@@ -246,7 +250,7 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 			A++;
 			cout << A << ' ';
 			for (int j = 0; j < this->y; j++) {
-				if (table[i][j] == '#'){
+				if (table[i][j] == '#') {
 					setcolor(15, 0);
 					cout << ' ' << table[i][j] << ' ';
 				}
@@ -263,6 +267,7 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 		cout << "That word is already on the board! " << endl << endl;
 }
 void Board::Erase(string word) {						//functional 10/10  carefull bc it will be necessary to erase blank spaces 😢
+	word = upper(word);
 	bool flag = false;
 	for (int i = 0; i < words.size(); i++) {
 		if (words.at(i) == word) {
@@ -313,7 +318,7 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 //============= File Manipulation ==========================================================     status: 1st func done!, 2nd to be done
 //==========================================================================================
 
-void Board::Save() {   //save fucntion in txt file done! 
+void Board::Save(string dictionary) {   //save fucntion in txt file done! 
 	string name;
 	ofstream save_file;
 
@@ -334,31 +339,19 @@ void Board::Save() {   //save fucntion in txt file done!
 		}
 		else break;
 	}
-
-	//FILE NAME LETS CHANGE THIS WITH A FUNCTION ABLE TO SEE THE NUMBERS
 	save_file.open(name);
-	save_file << "Dictionary file ? " << name << endl << endl; // dictionary file name not file name , eventually change 
-
-															   //grab functions on top and just repeat them here basicaly
-	char A = 64, a = 96;
-	save_file << "   ";														//Same func used on build func, but this time using "this" to get privates 
-	for (int i = 0; i < this->y; i++) {									// to not to confuse with x y declared on this func
-		a++;																	//also the coloring parameters where erased 
-		save_file << a << "  ";
-	}
-	save_file << endl;
+	save_file << "Dictionary file ? " << dictionary << endl << endl; // dictionary file name not file name , eventually change 
 	for (int i = 0; i < this->x; i++) {
-		A++;
-		save_file << A << ' ';
+
 		for (int j = 0; j < this->y; j++) {
-			save_file << ' ' << table[i][j] << ' ';
+			save_file << table[i][j] << ' ';
 		}
 		save_file << endl;
 	}
 	save_file << endl;
 	for (int i = 0; i < words.size(); i++) {									//func that shows the vectors 
 
-		save_file << coordenates.at(i) << "  " << words.at(i) << endl;
+		save_file << coordenates.at(i) << " " << words.at(i) << endl;
 	}
 	setcolor(10);
 	cout << " file saved succefully! " << endl << endl;
@@ -366,6 +359,100 @@ void Board::Save() {   //save fucntion in txt file done!
 	save_file.close();
 
 }
-void Board::Load() {
-	//to be written, parameter that grab a save file, reset manipulator vectors, fill them and show the board in the console 
+void Board::Save(string dictionary, string file) {
+	ofstream save_file;
+	save_file.open(file);
+	save_file << "Dictionary file ? " << dictionary << endl << endl; // dictionary file name not file name , eventually change 
+	for (int i = 0; i < this->x; i++) {
+
+		for (int j = 0; j < this->y; j++) {
+			save_file << table[i][j] << ' ';
+		}
+		save_file << endl;
+	}
+	save_file << endl;
+	for (int i = 0; i < words.size(); i++) {									//func that shows the vectors 
+
+		save_file << coordenates.at(i) << " " << words.at(i) << endl;
+	}
+	setcolor(10);
+	cout << " file saved succefully! " << endl << endl;
+	setcolor(15);
+	save_file.close();
+
+}
+string Board::Load() {    //load fucntion working properly 
+	table.clear();																				//clear table vector just for security
+	words.clear();
+	coordenates.clear();																		//the file always the follow this patter:
+	string name, line, dictionary;																// 1st line dictionary file name, 2nd blanck, the dic starts on the 3rd line 
+	ifstream load_file;																			//ending with a blanck line, the line by line showing pos and words from the board 
+	string value;
+	vector <char> letters;			//vector to allocate temporarily the board letters line by line 
+	int x = 0, y = 0;
+	cout << "Please enter name of the board your want to load: ";									//so...
+	cin >> name;
+	load_file.open(name);
+	if (load_file.is_open()) {
+		while (getline(load_file, line)) {												//push_back using using vectors, vector by vector pushback 
+			if (!line.empty()) {
+				if (line.at(0) == 'D' && line.at(1) == 'i') {
+					dictionary = line.erase(0, 18);
+					line = "...";		//(*) used to not to confilct with the coordenates and words vectors allocated on the vectors 
+				}
+				if (line.at(1) == ' ') {																//i am using a function to alocate lines on vector pushing back the content 
+					letters.clear();																	//to the main vector table, which the matrix i want 
+					for (int i = 0; i < line.size(); i++) {
+						if (line.at(i) != ' ')
+							letters.push_back(line.at(i));
+					}
+					table.push_back(letters);
+					y++;
+				}
+				if ((line.at(1) >= 97 || line.at(1) <= 122) && line.at(1) != ' ' && (line.at(2) >= 65 || line.at(2) <= 90)) {  //allocate the coordenates and the words on the saving vectors 
+					if (line != "...") {			//	(*) realted to the commment upstairs 		
+						if (!line.empty()) {		//Used to erase all empty valid lines that were being allocated on the vector when loading the file 
+							string pos;
+							pos = line.substr(0, 3);
+							coordenates.push_back(pos);
+							line.erase(0, 4);
+							words.push_back(line);
+						}
+
+					}
+				}
+			}
+		}
+		x = letters.size(); 																		//board display 
+		this->x = x; this->y = y;
+		char A = 64, a = 96;
+		cout << "   ";
+		for (int i = 0; i < this->y; i++) {
+			setcolor(4);
+			a++;
+			cout << a << "  ";
+		}
+		cout << endl;
+		for (int i = 0; i < this->x; i++) {
+			setcolor(4);
+			A++;
+			cout << A << ' ';
+			for (int j = 0; j < this->y; j++) {
+				if (table[i][j] == '#') {
+					setcolor(15, 0);
+					cout << ' ' << table[i][j] << ' ';
+				}
+				else {
+					setcolor(0, 7);
+					cout << ' ' << table[i][j] << ' ';
+				}
+			}
+			setcolor(15);
+			cout << endl;
+			load_file.close();
+		}
+		value = name + ' ' + dictionary;
+		return  value;
+	}
+	else cout << "That file does not exist or cannot be opened! " << endl << endl;
 }
