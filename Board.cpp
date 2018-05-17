@@ -17,7 +17,6 @@ using namespace std;
 //TODO: Option 2 porgram load func that can read the text file and allocate it in a vector so that the board can be continued 
 //TODO: build a func to print the board, avoiding copy and pasting always the same process
 //TODO: on load add a counter to define private coordinates 
-//TODO: remove space that is being alocated ont the vector and written on the file 
 
 vector <vector <char> > table;						//board vector, used as a sample O......O
 vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
@@ -382,12 +381,12 @@ void Board::Save(string dictionary, string file) {
 	save_file.close();
 
 }
-string Board::Load() {
-	table.clear(); //clear table vector just for security 
+string Board::Load() {    //load fucntion working properly 
+	table.clear();																				//clear table vector just for security
 	words.clear();
-	coordenates.clear();																			 //the file always the follow this patter:
-	string name, line,dictionary;																				// 1st line dictionary file name, 2nd blanck, the dic starts on the 3rd line 
-	ifstream load_file;																		//ending with a blanck line, the line by line showing pos and words from the board 
+	coordenates.clear();																		//the file always the follow this patter:
+	string name, line, dictionary;																// 1st line dictionary file name, 2nd blanck, the dic starts on the 3rd line 
+	ifstream load_file;																			//ending with a blanck line, the line by line showing pos and words from the board 
 	string value;
 	vector <char> letters;			//vector to allocate temporarily the board letters line by line 
 	int x = 0, y = 0;
@@ -397,31 +396,34 @@ string Board::Load() {
 	if (load_file.is_open()) {
 		while (getline(load_file, line)) {												//push_back using using vectors, vector by vector pushback 
 			if (!line.empty()) {
-				if (line.at(0)=='D' && line.at(1)=='i') {
+				if (line.at(0) == 'D' && line.at(1) == 'i') {
 					dictionary = line.erase(0, 18);
-					line = "...";
+					line = "...";		//(*) used to not to confilct with the coordenates and words vectors allocated on the vectors 
 				}
-				if (line.at(1) == ' ') {																//1. i ll use a func to check the third line so i can get the X dim
-					letters.clear();
+				if (line.at(1) == ' ') {																//i am using a function to alocate lines on vector pushing back the content 
+					letters.clear();																	//to the main vector table, which the matrix i want 
 					for (int i = 0; i < line.size(); i++) {
-						if (line.at(i) != ' ') 
+						if (line.at(i) != ' ')
 							letters.push_back(line.at(i));
-					}		
+					}
 					table.push_back(letters);
 					y++;
 				}
-				if ((line.at(1) >= 97 || line.at(1) <= 122) && line.at(1)!=' ' &&(line.at(2) >= 65 || line.at(2) <= 90 )) {
-					if(line!="..."){
-					string pos;
-					pos = line.substr(0, 3);
-					coordenates.push_back(pos);
-					line.erase(0, 4);
-					words.push_back(line);
+				if ((line.at(1) >= 97 || line.at(1) <= 122) && line.at(1) != ' ' && (line.at(2) >= 65 || line.at(2) <= 90)) {  //allocate the coordenates and the words on the saving vectors 
+					if (line != "...") {			//	(*) realted to the commment upstairs 		
+						if (!line.empty()) {		//Used to erase all empty valid lines that were being allocated on the vector when loading the file 
+							string pos;
+							pos = line.substr(0, 3);
+							coordenates.push_back(pos);
+							line.erase(0, 4);
+							words.push_back(line);
+						}
+
 					}
 				}
 			}
-		}	
-		x= letters.size(); 																			//6. end with your board display ont the console using the same function 
+		}
+		x = letters.size(); 																		//board display 
 		this->x = x; this->y = y;
 		char A = 64, a = 96;
 		cout << "   ";
