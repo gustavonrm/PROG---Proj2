@@ -11,15 +11,14 @@
 #include <fstream>
 
 using namespace std;
-//TODO: check words that cros sharing specific letters (last to thing to and i ll need to just the loading thing) NOOICE
+
 //TODO: try to change when the porgram finished and if you have time, the 2 vectors for words and positions that print from the board file for a map (key=pos, val=word)
 //TODO: improve remove func sa that can be sensitive to hashes and maintain shared chars
-//TODO: Option 2 porgram load func that can read the text file and allocate it in a vector so that the board can be continued 
 //TODO: build a func to print the board, avoiding copy and pasting always the same process
-//TODO: on load add a counter to define private coordinates 
 
 vector <vector <char> > table;						//board vector, used as a sample O......O
 vector <string> words, coordenates; 						//words and coordenates to erase/check/etc... 
+
 
 string upper(string input) {							//func to change all lower chars to upper if existent on the input 
 	for (int i = 0; i < input.size(); i++) {
@@ -35,7 +34,6 @@ string upper(string input) {							//func to change all lower chars to upper if 
 	}
 	return input;
 }
-
 bool sharedLetters(string input, string coord) {
 
 	int y = coord.at(0) - 65, x = coord.at(1) - 97;
@@ -66,8 +64,6 @@ bool sharedLetters(string input, string coord) {
 		return true;
 	}
 }
-
-
 string LCD(string lcd) {						//func to maintain lcd case sense
 	if (97 <= lcd.at(0) && lcd.at(0) <= 122)
 		lcd.at(0) = lcd.at(0) - 32;
@@ -143,7 +139,6 @@ void setcolor(unsigned int color, unsigned int background_color)
 //========================================================================================== 
 //====================== Class Itself ======================================================
 //==========================================================================================
-
 Board::Board() {
 
 }
@@ -268,23 +263,70 @@ void Board::Update(string pos, string word) { //i need to add a vector to save t
 }
 void Board::Erase(string word) {						//functional 10/10  carefull bc it will be necessary to erase blank spaces 😢
 	word = upper(word);
+	int size = word.size();
+	int xsizemajor = x + size; int xsizeless = x - 1; //used for the blank spaces
+	int ysizemajor = y + size; int ysizeless = y - 1;
 	bool flag = false;
 	for (int i = 0; i < words.size(); i++) {
 		if (words.at(i) == word) {
 			string coord = coordenates.at(i);
 			char A = 64, a = 96;
-			int x = coord[0] - 65, y = coord[1] - 97; //get the precise coordenates 
+			int x = coord[0] - 65, y = coord[1] - 97;											 //get the precise coordenates 
 			int size = word.size();
-			if (coord[2] == 'V') { //distribute through inside the vector line/columns 
+			if (coord[2] == 'V') {																 //distribute through inside the vector line/columns 
 				for (int i = 0; i < size; i++) {
-					table[x][y] = '.';
+					int min = y - 1, max = y + 1; 
+					if (min < 0)
+						if (max <= this->y) {
+							if (table[x][y + 1] == '.' || table[x][y + 1] == '#')
+								table[x][y] = '.';
+						}
+					if(max > this->y)
+						if(min>=0) {
+							if (table[x][y - 1] == '.' || table[x][y - 1] == '#')
+								table[x][y] = '.';
+						}
+
+					if(min <= 0 && max >= this->y)
+						if( (table[x][y-1]=='.' || table[x][y - 1] == '#') &&(table[x][y + 1] == '.' || table[x][y + 1] == '#'))
+							table[x][y] = '.';
 					x++;
+				}
+				if (xsizemajor < this->x) {					//hashes 
+					if (table[xsizemajor][y] == '#')
+						table[xsizemajor][y] = '.';
+				}
+				if (xsizeless >= 0) {						//hashes
+					if (table[xsizeless][y] == '#')
+						table[xsizeless][y] = '.';
 				}
 			}																						//need to implement some kind of func capable 
 			else if (coord[2] == 'H') {																	//of checking same letters and words, and a removal 
 				for (int i = 0; i < size; i++) {
-					table[x][y] = '.';
+					int min = x - 1, max = x + 1;
+					if (min < 0)
+						if (max <= this->x) {
+							if (table[x+1][y] == '.' || table[x+1][y ] == '#')
+								table[x][y] = '.';
+						}
+					if (max > this->x)
+						if (min >= 0) {
+							if (table[x-1][y] == '.' || table[x-1][y] == '#')
+								table[x][y] = '.';
+						}
+					
+					if (min <= 0 && max>=this->x)
+						 if ((table[x - 1][y] == '.' || table[x - 1][y] == '#' )&&(table[x + 1][y] == '.' || table[x + 1][y + 1] == '#'))
+							table[x][y] = '.';
 					y++;
+				}
+				if (ysizemajor < this->y) {
+					if (table[x][ysizemajor] == '#')			//hashes
+						table[x][ysizemajor] = '.';
+				}
+				if (ysizeless >= 0) {
+					if (table[x][ysizeless] == '#')				//hashes
+						table[x][ysizeless] = '.';
 				}
 			}
 			words.erase(words.begin() + i);						//erase the word from  the allocator vector 
@@ -317,7 +359,6 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 //==========================================================================================
 //============= File Manipulation ==========================================================     status: 1st func done!, 2nd to be done
 //==========================================================================================
-
 void Board::Save(string dictionary) {   //save fucntion in txt file done! 
 	string name;
 	ofstream save_file;
@@ -455,4 +496,38 @@ string Board::Load() {    //load fucntion working properly
 		return  value;
 	}
 	else cout << "That file does not exist or cannot be opened! " << endl << endl;
+}
+void Board::Finish() {   //turn all dots into hashes
+	char A = 64, a = 96;
+	for (int i = 0; i < x; i++) {
+		for (int j = 0; j < y; j++) {
+			if (table[i][j] == '.')
+				table[i][j] = '#';
+		}
+	}
+	//show 
+	cout << "   ";														//Same func used on build func, but this time using "this" to get privates 
+	for (int i = 0; i < this->y; i++) {									// to not to confuse with x y declared on this func 
+		setcolor(4);
+		a++;
+		cout << a << "  ";
+	}
+	cout << endl;
+	for (int i = 0; i < this->x; i++) {
+		setcolor(4);
+		A++;
+		cout << A << ' ';
+		for (int j = 0; j < this->y; j++) {
+			if (table[i][j] == '#') {
+				setcolor(15, 0);
+				cout << ' ' << table[i][j] << ' ';
+			}
+			else {
+				setcolor(0, 7);
+				cout << ' ' << table[i][j] << ' ';
+			}
+		}
+		setcolor(15);
+		cout << endl;
+	} 
 }

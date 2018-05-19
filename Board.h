@@ -3,6 +3,13 @@
 
 #include <iostream>
 #include<string>
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <windows.h>
+#include <vector>
+#include <fstream>
+#include <map>
 
 using namespace std; 
 
@@ -17,13 +24,16 @@ public:
 	void Save(string dictionary);
 	void Save(string dictionary, string file); 
 	string Load();
-
+	void Finish();
 	~Board();
 private:
 	unsigned int x, y; 
+	map<string, string> word_coordenates;
+	map<string, string>::iterator it;
 	friend string upper(string input);
 	friend bool sharedLetters(string input,string coord); 
 	friend string LCD(string lcd);
+	//I am not using a showing fucntion beause it differs from function to function sometimes
 };
 
 #endif // 
