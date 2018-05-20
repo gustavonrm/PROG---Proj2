@@ -533,6 +533,7 @@ string Board::Load() {    //load fucntion working properly
 
 	vector<string> Board::Line()
 	{
+		vector<string>lines;
 		string line;
 		for (int j = 0; j < table[y].size(); j++)
 		{
@@ -545,6 +546,7 @@ string Board::Load() {    //load fucntion working properly
 
 	vector<string> Board::Column()
 	{
+		vector<string>columns;
 		string column;
 		for (int j = 0; j < table[x].size(); j++)
 		{
