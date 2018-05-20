@@ -275,20 +275,20 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 			int size = word.size();
 			if (coord[2] == 'V') {																 //distribute through inside the vector line/columns 
 				for (int i = 0; i < size; i++) {
-					int min = y - 1, max = y + 1; 
+					int min = y - 1, max = y + 1;
 					if (min < 0)
 						if (max <= this->y) {
 							if (table[x][y + 1] == '.' || table[x][y + 1] == '#')
 								table[x][y] = '.';
 						}
-					if(max > this->y)
-						if(min>=0) {
+					if (max > this->y)
+						if (min >= 0) {
 							if (table[x][y - 1] == '.' || table[x][y - 1] == '#')
 								table[x][y] = '.';
 						}
 
-					if(min <= 0 && max >= this->y)
-						if( (table[x][y-1]=='.' || table[x][y - 1] == '#') &&(table[x][y + 1] == '.' || table[x][y + 1] == '#'))
+					if (min <= 0 && max >= this->y)
+						if ((table[x][y - 1] == '.' || table[x][y - 1] == '#') && (table[x][y + 1] == '.' || table[x][y + 1] == '#'))
 							table[x][y] = '.';
 					x++;
 				}
@@ -306,17 +306,17 @@ void Board::Erase(string word) {						//functional 10/10  carefull bc it will be
 					int min = x - 1, max = x + 1;
 					if (min < 0)
 						if (max <= this->x) {
-							if (table[x+1][y] == '.' || table[x+1][y ] == '#')
+							if (table[x + 1][y] == '.' || table[x + 1][y] == '#')
 								table[x][y] = '.';
 						}
 					if (max > this->x)
 						if (min >= 0) {
-							if (table[x-1][y] == '.' || table[x-1][y] == '#')
+							if (table[x - 1][y] == '.' || table[x - 1][y] == '#')
 								table[x][y] = '.';
 						}
-					
-					if (min <= 0 && max>=this->x)
-						 if ((table[x - 1][y] == '.' || table[x - 1][y] == '#' )&&(table[x + 1][y] == '.' || table[x + 1][y + 1] == '#'))
+
+					if (min <= 0 && max >= this->x)
+						if ((table[x - 1][y] == '.' || table[x - 1][y] == '#') && (table[x + 1][y] == '.' || table[x + 1][y + 1] == '#'))
 							table[x][y] = '.';
 					y++;
 				}
@@ -497,7 +497,7 @@ string Board::Load() {    //load fucntion working properly
 	}
 	else cout << "That file does not exist or cannot be opened! " << endl << endl;
 }
-	void Board::Finish() {   //turn all dots into hashes
+void Board::Finish() {   //turn all dots into hashes
 	char A = 64, a = 96;
 	for (int i = 0; i < x; i++) {
 		for (int j = 0; j < y; j++) {
@@ -530,30 +530,30 @@ string Board::Load() {    //load fucntion working properly
 		setcolor(15);
 		cout << endl;
 	}
+}
 
-	vector<string> Board::Line()
+vector<string> Board::Line()
+{
+	vector<string>lines;
+	string line;
+	for (int j = 0; j < table[y].size(); j++)
 	{
-		vector<string>lines;
-		string line;
-		for (int j = 0; j < table[y].size(); j++)
-		{
-			for (int i = 0; i < table[x].size(); i++)
-				line += table[j][i];
-			lines.push_back(line);
-		}
-		return lines;
+		for (int i = 0; i < table[x].size(); i++)
+			line += table[j][i];
+		lines.push_back(line);
 	}
+	return lines;
+}
 
-	vector<string> Board::Column()
+vector<string> Board::Column() {
+	vector<string>columns;
+	string column;
+	for (int j = 0; j < table[x].size(); j++)
 	{
-		vector<string>columns;
-		string column;
-		for (int j = 0; j < table[x].size(); j++)
-		{
-			for (int i = 0; i < table[y].size(); i++)
-				column += table[i][j];
-			columns.push_back(column);
-		}
+		for (int i = 0; i < table[y].size(); i++)
+			column += table[i][j];
+		columns.push_back(column);
 	}
 	return columns;
+
 }
