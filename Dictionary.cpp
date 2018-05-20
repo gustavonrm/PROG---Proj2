@@ -78,53 +78,75 @@ bool Dictionary::Check_if_valid(string word)
 
  /*================================================================
  ============================= HELP =============================*/
-vector<string> Dictionary::possible_words(string word)
+
+vector<string> Dictionary::possible_words(vector<string> words)
 {
+	string word = words[0];
+	words.erase(words.begin());
 	vector<string> words_poss;
 	/* first takes out the "#" in the begin and in the end (if they exist) */
-	if (word.at(0) == '#')
+	if (word[0] == '#')
 		word.erase(0);
-	if (word.at(word.size() - 1 == '#'))
+	for (int i = 0; i<word.size() - 1; i++)
+		if (word[i] == '#')
+			word.erase(i, word.size() - 1);
+	if (word.at(word.size() - 1) == '#')
 		word.erase(word.size() - 1);
 
+	/* then it sees what words from the dictionary fit */
 	for (it = dictionary.begin(); it != dictionary.end(); it++)
 	{
-		/* all the words smaller or equal to the string word are copied to the vector words */
 		vector<string> synonyms = it->second;
 		string first = it->first;
-		if (word.size() >= first.size())
+
+		if (first.size() <= word.size())
 			words_poss.push_back(first);
 
 		for (int i = 0; i < synonyms.size(); i++)
 		{
-			string second = synonyms.at(i);
+			string second = synonyms[i];
 
-			if (word.size() >= second.size())
+			if (second.size() <= word.size())
 				words_poss.push_back(second);
 		}
+
 	}
 
+	/* removes every word that would change letters already on the board */
 	for (int i = 0; i < words_poss.size(); i++)
 	{
-		string spare = word;																							 //creates a copy of the string word so it can be edited without editing the original
-		string element = words_poss.at(i);
-
-		for (int j = 0; j < element.size(); j++)
-		{
-			/* this cicle checks if the string in position i in the vector words fits somewhere inside the string word */
-			if (spare.size() <= element.size())
+		string poss = words_poss[i];
+		for (int j = 0; j < poss.size(); j++)
+			if (word[j] != '.' && word[j] != poss[j])
 			{
 				words_poss.erase(words_poss.begin() + i);
 				j = string::npos;
 				i--;
 			}
-			else if (spare.at(j) != element.at(j) && spare.at(j) != '.' || spare.at(j) == '#')
-			{
-				spare.erase(0);
-				j = 0;
-			}
-
-		}
-		return words_poss;
 	}
+
+	/* in the end removes every word that already is in the board or on the vector of the possible words */
+	for (int i = 0; i < words.size(); i++)
+		for (int j = 0; j < words_poss.size(); j++)
+		{
+			if (words_poss[j] == words[i])
+			{
+				words_poss.erase(words_poss.begin() + j);
+				j = string::npos;
+				i--;
+			}
+		}
+	for (int i = 0; i < words_poss.size(); i++)
+		for (int j = i + 1; j < words_poss.size(); j++)
+		{
+			if (words_poss[j] == words_poss[i])
+			{
+				words_poss.erase(words_poss.begin() + j);
+				j = string::npos;
+				i--;
+			}
+		}
+
+	return vector<string>();
 }
+//===============================================================

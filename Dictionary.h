@@ -16,7 +16,8 @@ class Dictionary
 public:
 	Dictionary(string synonyms);
 	bool Check_if_valid(string word);
-	vector<string> possible_words(string word);
+	vector<string> possible_words(vector<string> words);
+
 private:
 	ifstream intext;
 	vector <string> temp_vec;

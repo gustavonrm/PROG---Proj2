@@ -25,8 +25,7 @@ public:
 	void Save(string dictionary, string file); 
 	string Load();
 	void Finish();
-	vector<string> Line();
-	vector<string> Column();
+	vector<string> Line_help(string lcd);
 
 	~Board();
 private:
