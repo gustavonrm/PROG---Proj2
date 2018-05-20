@@ -136,16 +136,7 @@ vector<string> Dictionary::possible_words(vector<string> words)
 				i--;
 			}
 		}
-	sort(words_poss.begin(),words_poss.end());
-	for (int i = 0; i < words_poss.size(); i++)
-	{
-		if (words_poss.at(i) == words_poss.at(i+1))
-		{
-			words_poss.erase(words_poss.begin() + i);
-			i--;
-		}
-	}
 
-	return vector<string>();
+	return words_poss;
 }
 //===============================================================
