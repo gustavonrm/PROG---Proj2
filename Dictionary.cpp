@@ -78,8 +78,9 @@ bool Dictionary::Check_if_valid(string word)
 
  /*================================================================
  ============================= HELP =============================*/
-void Dictionary::possible_words(string word)
+vector<string> Dictionary::possible_words(string word)
 {
+	vector<string> words_poss;
 	/* first takes out the "#" in the begin and in the end (if they exist) */
 	if (word.at(0) == '#')
 		word.erase(0);
@@ -102,7 +103,7 @@ void Dictionary::possible_words(string word)
 				words_poss.push_back(second);
 		}
 	}
-	
+
 	for (int i = 0; i < words_poss.size(); i++)
 	{
 		string spare = word;																							 //creates a copy of the string word so it can be edited without editing the original
@@ -123,6 +124,7 @@ void Dictionary::possible_words(string word)
 				j = 0;
 			}
 
-		}	
+		}
+		return words_poss;
 	}
 }
