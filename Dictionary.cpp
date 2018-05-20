@@ -1,11 +1,13 @@
+
 #include "Dictionary.h"
+
 /*==========================================================
 =======================CONSTRUCTOR========================*/
 
 void Dictionary::to_vec(string line)
 {
-	int found = line.find(",");
-	if (found == string::npos)
+	bool not_found = line.find(",") == string::npos;
+	if (not_found)
 		temp_vec.push_back(line);																							//copies the last word of the line to the vector
 	else
 	{
@@ -21,11 +23,11 @@ void Dictionary::simple_words(vector<string> vec)
 		for (int j = 0; j < vec.at(i).length(); j++)
 		{
 			if (vec.at(i).at(j) >= 'a'&& vec.at(i).at(j) <= 'z')
-				vec.at(i).at(j) -= 32;                           															//all lowercase letters become uppercase letters
+				vec.at(i).at(j) -= 32;							                 											//all lowercase letters become uppercase letters
 			else if (vec.at(i).at(j) < 'A' || vec.at(i).at(j) > 'Z')        												//if it isn't a letter
 			{
-				vec.erase(vec.begin() + i);                     															//erases the word/words that aren't simple
-				j = string::npos;			                       															//sums the length of the word to j so it stops the cicle and jumps to the next word
+				vec.erase(vec.begin() + i);
+				j = string::npos;			                       															//so it jumps to the next word
 				i--;                                             															//so it doesn't skip a word
 			}
 		}
@@ -48,14 +50,13 @@ Dictionary::Dictionary(string synonyms)
 		{
 			temp_vec.push_back(line.substr(0, line.find(":")));   														    //copies first word from line to the vector
 			line.erase(0, line.find(":") + 2);                    														    //deletes first word, the ":" and the space
-			to_vec(line);
-			simple_words(temp_vec);
+			to_vec(line);																									//copies all te other words from the line to the vector
+			simple_words(temp_vec);																						    //deletes all words that aren't simple
 			to_map(temp_vec);
-			temp_vec.clear();                                     														    //clears vector so the new line can be added
+			temp_vec.clear();
 		}
 		intext.close();
 	}
-
 	else cout << "Unable to open file";
 }//===============================================================
 
@@ -77,10 +78,8 @@ bool Dictionary::Check_if_valid(string word)
 
  /*================================================================
  ============================= HELP =============================*/
-vector<string> Dictionary::possible_words(string word)
+void Dictionary::possible_words(string word)
 {
-	vector<string> words;
-
 	/* first takes out the "#" in the begin and in the end (if they exist) */
 	if (word.at(0) == '#')
 		word.erase(0);
@@ -93,28 +92,28 @@ vector<string> Dictionary::possible_words(string word)
 		vector<string> synonyms = it->second;
 		string first = it->first;
 		if (word.size() >= first.size())
-			words.push_back(first); 
+			words_poss.push_back(first);
 
 		for (int i = 0; i < synonyms.size(); i++)
 		{
 			string second = synonyms.at(i);
 
 			if (word.size() >= second.size())
-				words.push_back(second);
+				words_poss.push_back(second);
 		}
 	}
 	
-	for (int i = 0; i < words.size(); i++)
+	for (int i = 0; i < words_poss.size(); i++)
 	{
-		string spare = word;																								 //creates a copy of the string word so it can be edited without editing the original
-		string element = words.at(i);
+		string spare = word;																							 //creates a copy of the string word so it can be edited without editing the original
+		string element = words_poss.at(i);
 
 		for (int j = 0; j < element.size(); j++)
 		{
 			/* this cicle checks if the string in position i in the vector words fits somewhere inside the string word */
 			if (spare.size() <= element.size())
 			{
-				words.erase(words.begin() + i);
+				words_poss.erase(words_poss.begin() + i);
 				j = string::npos;
 				i--;
 			}
@@ -126,5 +125,4 @@ vector<string> Dictionary::possible_words(string word)
 
 		}	
 	}
-	return words;
 }

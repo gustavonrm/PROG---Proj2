@@ -25,6 +25,9 @@ public:
 	void Save(string dictionary, string file); 
 	string Load();
 	void Finish();
+	vector<string> lines;
+	vector<string> columns;
+
 	~Board();
 private:
 	unsigned int x, y; 
@@ -33,7 +36,11 @@ private:
 	friend string upper(string input);
 	friend bool sharedLetters(string input,string coord); 
 	friend string LCD(string lcd);
+
 	//I am not using a showing fucntion beause it differs from function to function sometimes
+	vector<string> lines;
+	vector<string> columns;
+
 };
 
 #endif // 

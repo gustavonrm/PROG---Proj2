@@ -497,6 +497,7 @@ string Board::Load() {    //load fucntion working properly
 	}
 	else cout << "That file does not exist or cannot be opened! " << endl << endl;
 }
+<<<<<<< Updated upstream
 void Board::Finish() {   //turn all dots into hashes
 	char A = 64, a = 96;
 	for (int i = 0; i < x; i++) {
@@ -530,4 +531,26 @@ void Board::Finish() {   //turn all dots into hashes
 		setcolor(15);
 		cout << endl;
 	} 
-}
+
+	void Board::Line()
+	{
+		string line;
+		for (int j = 0; j < table[y].size(); j++)
+		{
+			for (int i = 0; i < table[x].size(); i++)
+				line += table[j][i];
+			lines.push_back(line);
+		}
+	}
+
+	void Board::Column()
+	{
+		string column;
+		for (int j = 0; j < table[x].size(); j++)
+		{
+			for (int i = 0; i < table[y].size(); i++)
+				column += table[i][j];
+			columns.push_back(column);
+		}
+	}
+
