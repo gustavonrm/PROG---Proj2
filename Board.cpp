@@ -541,13 +541,13 @@ vector<string> Board::Line_help(string pos)
 	int x = pos[0] - 65, y = pos[1] - 97, Space = 0;
 
 	if (pos[2] == 'H')  //line/columns
-		for (int i = y; i <= this->y; i++)
+		for (int i = y; i <= this->y-1; i++)
 			word += table[i][x];
 	else if (pos[2] == 'V')
-		for (int i = x; i <= this->x; i++)
+		for (int i = x; i <= this->x-1; i++)
 			word.push_back(table[y][i]);
 	help.push_back(word);
-	for (int i = 0; i < word.size(); i++)
+	for (int i = 0; i < words.size(); i++)
 		help.push_back(words[i]);
 
 	return help;
